@@ -1,0 +1,11 @@
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\bin\Debug\netcoreapp2.1\LyricScraper.deps.json
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\bin\Debug\netcoreapp2.1\LyricScraper.runtimeconfig.json
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\bin\Debug\netcoreapp2.1\LyricScraper.runtimeconfig.dev.json
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\bin\Debug\netcoreapp2.1\LyricScraper.dll
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\obj\Debug\netcoreapp2.1\LyricScraper.csprojAssemblyReference.cache
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\obj\Debug\netcoreapp2.1\LyricScraper.csproj.CoreCompileInputs.cache
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\obj\Debug\netcoreapp2.1\LyricScraper.AssemblyInfoInputs.cache
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\obj\Debug\netcoreapp2.1\LyricScraper.AssemblyInfo.cs
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\bin\Debug\netcoreapp2.1\LyricScraper.pdb
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\obj\Debug\netcoreapp2.1\LyricScraper.dll
+C:\Users\justin\LyricGenerator\LyricScraper\LyricScraper\obj\Debug\netcoreapp2.1\LyricScraper.pdb
