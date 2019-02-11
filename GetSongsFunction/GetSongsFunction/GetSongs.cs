@@ -11,23 +11,25 @@ using System;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Logging;
+using MusicDemons.Core.Entities;
+using System.Collections.Generic;
 
 namespace GetSongsFunction
 {
     public static class GetSongs
     {
         [FunctionName("GetSongs")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, TraceWriter log)
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log)
         {
             try
             {
-                log.Info("Getting song ids..");
+                log.LogInformation("Getting song ids..");
                 var httpClient = new HttpClient();
 
                 var response = await httpClient.GetStringAsync("https://musicdemons.com/api/v1/song");
 
-                var json = JArray.Parse(response);
-                var ids = json.Select(j => long.Parse(j["id"].ToString()));
+                var songs = JsonConvert.DeserializeObject<List<Song>>(response);
 
                 return new OkObjectResult($"Done");
                     
