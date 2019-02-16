@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
 using MusicDemons.Core.Entities;
 using System.Collections.Generic;
+using LyricRobotCommon;
 
 namespace GetSongsFunction
 {

@@ -748,11 +748,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\justin\\LyricGenerator\\LyricScraper\\LyricScraper\\LyricScraper.csproj",
+      "projectUniqueName": "C:\\Users\\justin\\LyricRobot\\LyricScraper\\LyricScraper\\LyricScraper.csproj",
       "projectName": "LyricScraper",
-      "projectPath": "C:\\Users\\justin\\LyricGenerator\\LyricScraper\\LyricScraper\\LyricScraper.csproj",
+      "projectPath": "C:\\Users\\justin\\LyricRobot\\LyricScraper\\LyricScraper\\LyricScraper.csproj",
       "packagesPath": "C:\\Users\\justin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\justin\\LyricGenerator\\LyricScraper\\LyricScraper\\obj\\",
+      "outputPath": "C:\\Users\\justin\\LyricRobot\\LyricScraper\\LyricScraper\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

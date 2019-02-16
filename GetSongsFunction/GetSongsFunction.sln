@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetSongsFunction", "GetSongsFunction\GetSongsFunction.csproj", "{20BF15B9-F571-4779-919E-EFA92D37C5D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetSongsFunction", "GetSongsFunction\GetSongsFunction.csproj", "{20BF15B9-F571-4779-919E-EFA92D37C5D7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LyricRobotCommon", "..\CommonLibrary\LyricRobotCommon\LyricRobotCommon.csproj", "{408A6363-B4B5-4994-AF32-C7F3C0DF6AA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{20BF15B9-F571-4779-919E-EFA92D37C5D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20BF15B9-F571-4779-919E-EFA92D37C5D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20BF15B9-F571-4779-919E-EFA92D37C5D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{408A6363-B4B5-4994-AF32-C7F3C0DF6AA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{408A6363-B4B5-4994-AF32-C7F3C0DF6AA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{408A6363-B4B5-4994-AF32-C7F3C0DF6AA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{408A6363-B4B5-4994-AF32-C7F3C0DF6AA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,6 +9,9 @@
     <PackageReference Include="MusicDemons.Core" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CommonLibrary\LyricRobotCommon\LyricRobotCommon.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
