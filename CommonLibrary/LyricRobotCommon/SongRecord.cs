@@ -7,6 +7,10 @@ namespace LyricRobotCommon
 {
     public class SongRecord
     {
+        public SongRecord()
+        {
+        }
+
         public SongRecord(Song song)
         {
             this.id = song.Id.ToString();
@@ -22,5 +26,6 @@ namespace LyricRobotCommon
 
         public bool LyricsDownloaded { get; set; }
 
+        public string Lyrics { get; set; }
     }
 }

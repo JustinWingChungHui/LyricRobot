@@ -13,7 +13,7 @@
     public static class DocumentDBRepository<T> where T : class
     {
         private static readonly string DatabaseId = CosmosDBSettings.DatabaseId;
-        private static readonly string CollectionId = CosmosDBSettings.CollectionId;
+        public static string CollectionId = CosmosDBSettings.CollectionId;
         private static readonly string Endpoint = CosmosDBSettings.Endpoint;
         private static readonly string AuthKey = CosmosDBSettings.AuthKey;
 
@@ -39,11 +39,11 @@
             }
         }
 
-        public static async Task<IEnumerable<T>> GetItemsAsync(Expression<Func<T, bool>> predicate)
+        public static async Task<IEnumerable<T>> GetItemsAsync(Expression<Func<T, bool>> predicate, int maxItemCount)
         {
             IDocumentQuery<T> query = client.CreateDocumentQuery<T>(
                 UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId),
-                new FeedOptions { MaxItemCount = -1 })
+                new FeedOptions { MaxItemCount = maxItemCount, EnableCrossPartitionQuery = true })
                 .Where(predicate)
                 .AsDocumentQuery();
 
@@ -78,8 +78,9 @@
             await client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id));
         }
 
-        public static void Initialize()
+        public static void Initialize(string collectionId = "Songs")
         {
+            CollectionId = collectionId;
             client = new DocumentClient(new Uri(Endpoint), AuthKey);
             CreateDatabaseIfNotExistsAsync().Wait();
             CreateCollectionIfNotExistsAsync().Wait();
