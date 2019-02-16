@@ -69,7 +69,8 @@
 
         public static async Task<Document> UpsertItemAsync(string id, T item)
         {
-            return await client.UpsertDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id), item);
+            var collectionLink = UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId);
+            return await client.UpsertDocumentAsync(collectionLink, item);
         }
 
         public static async Task DeleteItemAsync(string id)
