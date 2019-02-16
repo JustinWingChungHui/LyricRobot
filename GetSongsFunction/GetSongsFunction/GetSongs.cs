@@ -34,7 +34,7 @@ namespace GetSongsFunction
                 DocumentDBRepository<SongRecord>.Initialize();
 
                 var tasks = new List<Task>();
-                songs.ForEach(s => tasks.Add(DocumentDBRepository<SongRecord>.CreateItemAsync(s)));
+                songs.ForEach(s => tasks.Add(DocumentDBRepository<SongRecord>.UpsertItemAsync(s.Id?.ToString(), s)));
 
                 await Task.WhenAll(tasks);
 
