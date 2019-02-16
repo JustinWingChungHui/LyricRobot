@@ -29,7 +29,14 @@ namespace GetSongsFunction
 
                 var response = await httpClient.GetStringAsync("https://musicdemons.com/api/v1/song");
 
-                var songs = JsonConvert.DeserializeObject<List<Song>>(response);
+                var songs = JsonConvert.DeserializeObject<List<SongRecord>>(response);
+
+                DocumentDBRepository<SongRecord>.Initialize();
+
+                var tasks = new List<Task>();
+                songs.ForEach(s => tasks.Add(DocumentDBRepository<SongRecord>.CreateItemAsync(s)));
+
+                await Task.WhenAll(tasks);
 
                 return new OkObjectResult($"Done");
                     
