@@ -14,5 +14,7 @@ namespace LyricRobotCommon
         public string id { get; set; }
 
         public Dictionary<string, SuccessorCount> successors { get; set; }
+
+        public int SuccessorCountTotal { get; set; }
     }
 }

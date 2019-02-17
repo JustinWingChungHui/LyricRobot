@@ -56,6 +56,8 @@ namespace LyricDataProcessor
                 entry.Value.CumulativeCount = cumulativeCount;
             }
 
+            word.SuccessorCountTotal = cumulativeCount;
+
             // Save to db
             log.LogInformation("Initialising Words Repo");
             DocumentDBRepository<Word>.Initialize("Words");
@@ -102,6 +104,8 @@ namespace LyricDataProcessor
                     cumulativeCount += succ.Count;
                     succ.CumulativeCount = cumulativeCount;
                 }
+
+                word.SuccessorCountTotal = cumulativeCount;
             }
 
             // Save to db
