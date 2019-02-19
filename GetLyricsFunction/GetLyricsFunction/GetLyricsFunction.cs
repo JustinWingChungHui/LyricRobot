@@ -13,7 +13,7 @@ namespace GetLyricsFunction
     public static class GetLyricsFunction
     {
         [FunctionName("GetLyricsFunction")]
-        public static async Task Run([TimerTrigger("0 0 * * * *", RunOnStartup = true)]TimerInfo myTimer, ILogger log)
+        public static async Task Run([TimerTrigger("0 */20 * * * *", RunOnStartup = true)]TimerInfo myTimer, ILogger log)
         {
 
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
@@ -29,7 +29,7 @@ namespace GetLyricsFunction
             log.LogInformation("Getting lyrics async");
             var tasks = new List<Task>();
 
-            songs.Take(10).ToList().ForEach(s => tasks.Add(UpdateSong(s, httpClient, log)));
+            songs.Take(30).ToList().ForEach(s => tasks.Add(UpdateSong(s, httpClient, log)));
 
             await Task.WhenAll(tasks);
 
