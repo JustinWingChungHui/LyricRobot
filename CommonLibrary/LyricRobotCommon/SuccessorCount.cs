@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,10 +7,10 @@ namespace LyricRobotCommon
 {
     public class SuccessorCount
     {
-        public string Word { get; set; }
-
+        [JsonIgnore]
         public int Count { get; set; }
 
+        [JsonProperty(PropertyName = "c")]
         public int CumulativeCount { get; set; }
     }
 }

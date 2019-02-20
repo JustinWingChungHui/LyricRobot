@@ -331,3 +331,4 @@ ASALocalRun/
 
 # Lyric Robot Specific Files
 CosmosDBSettings.cs
+BlobRepositorySettings.cs

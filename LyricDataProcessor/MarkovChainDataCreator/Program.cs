@@ -9,9 +9,6 @@ namespace LyricDataProcessorConsole
 {
     public class Program
     {
-        private static int objectsSaved = 0;
-        private static int TotalObjects = 0;
-
         public static void Main(string[] args)
         {
             MainAsync(args).Wait();
@@ -19,34 +16,44 @@ namespace LyricDataProcessorConsole
 
         public static async Task MainAsync(string[] args)
         {
-            Console.WriteLine("Starting Lyrics processor");
+            Console.WriteLine("Starting...");
+
+            var markovChain = new MarkovChain
+            {
+                id = "MarkovChainOrder1",
+            };
 
             var lyrics = await GetLyrics();
 
-            await ProcessStartLyrics(lyrics);
+            var chainStart = ProcessStartLyrics(lyrics);
+            markovChain.Words.Add(Word.StartOfLine, chainStart);
 
-            var docObj = new Dictionary<string, Word>();
+            Console.WriteLine(string.Empty);
+            Console.WriteLine("Starting Markov Chain Order 1 Data");
+
+
             foreach (var lyric in lyrics)
             {
                 var words = lyric.ToLowerInvariant().Split(' ');
 
                 for (int i = 0; i < words.Length - 1; i++)
                 {
+
                     var pred = words[i];
                     var succ = words[i + 1];
 
-                    TallySuccessor(docObj, pred, succ);
+                    TallySuccessor(markovChain.Words, pred, succ);
                 }
 
                 // Add in terminator
-                TallySuccessor(docObj, words.Last(), Environment.NewLine);
+                TallySuccessor(markovChain.Words, words.Last(), Environment.NewLine);
             }
 
             // Fill in Cumulative counts
-            foreach (var word in docObj.Values)
+            foreach (var word in markovChain.Words.Values)
             {
                 int cumulativeCount = 0;
-                foreach (var succ in word.successors.Values)
+                foreach (var succ in word.Successors.Values)
                 {
                     cumulativeCount += succ.Count;
                     succ.CumulativeCount = cumulativeCount;
@@ -55,29 +62,15 @@ namespace LyricDataProcessorConsole
                 word.SuccessorCountTotal = cumulativeCount;
             }
 
-            // Save to db
-            Console.WriteLine("Initialising Words Repo");
-            DocumentDBRepository<Word>.Initialize("MarkovChain1");
-
-            Console.WriteLine("Saving to db");
-            var tasks = new List<Task>();
-            TotalObjects = docObj.Values.Count;
-
-            docObj.Values.ToList().ForEach(w => tasks.Add(UpsertItem(w.id, w)));
-
-            await Task.WhenAll(tasks);
+            // Save to to blob storage           
+            Console.WriteLine("Saving to blob");
+            await BlobRepository<MarkovChain>.Create("MarkovChainOrder1", markovChain);      
         }
 
-        private static async Task UpsertItem(string id, Word w)
+       
+        private static Word ProcessStartLyrics(IEnumerable<string> lyrics)
         {
-            await DocumentDBRepository<Word>.UpsertItemAsync(w.id, w);
-            objectsSaved++;
-            Console.Write($"\rSaved {objectsSaved} out of {TotalObjects}");
-        }
-
-        private static async Task ProcessStartLyrics(IEnumerable<string> lyrics)
-        {
-            Console.WriteLine("Processing start lyrics");
+            Console.WriteLine("Createing start word data");
 
             // Count all the start words
             var dict = new Dictionary<string, SuccessorCount>();
@@ -89,7 +82,7 @@ namespace LyricDataProcessorConsole
                 {
                     if (!dict.ContainsKey(firstWord))
                     {
-                        dict.Add(firstWord, new SuccessorCount { Word = firstWord });
+                        dict.Add(firstWord, new SuccessorCount());
                     }
 
                     dict[firstWord].Count++;
@@ -98,10 +91,9 @@ namespace LyricDataProcessorConsole
 
             // Create object to save to db
             Console.WriteLine("Creating document object");
-            var word = new Word
+            var startOfChain = new Word
             {
-                id = "Start of Line",
-                successors = dict
+                Successors = dict
             };
 
             int cumulativeCount = 0;
@@ -111,29 +103,24 @@ namespace LyricDataProcessorConsole
                 entry.Value.CumulativeCount = cumulativeCount;
             }
 
-            word.SuccessorCountTotal = cumulativeCount;
+            startOfChain.SuccessorCountTotal = cumulativeCount;
 
-            // Save to db
-            Console.WriteLine("Initialising Words Repo");
-            DocumentDBRepository<Word>.Initialize("MarkovChain1");
-
-            Console.WriteLine("Saving to db");
-            await DocumentDBRepository<Word>.UpsertItemAsync(word.id, word);
+            return startOfChain;
         }
 
         private static void TallySuccessor(Dictionary<string, Word> docObj, string pred, string succ)
         {
             if (!docObj.ContainsKey(pred))
             {
-                docObj.Add(pred, new Word { id = pred });
+                docObj.Add(pred, new Word());
             }
 
-            if (!docObj[pred].successors.ContainsKey(succ))
+            if (!docObj[pred].Successors.ContainsKey(succ))
             {
-                docObj[pred].successors.Add(succ, new SuccessorCount { Word = succ });
+                docObj[pred].Successors.Add(succ, new SuccessorCount());
             }
 
-            docObj[pred].successors[succ].Count++;
+            docObj[pred].Successors[succ].Count++;
         }
 
         private static async Task<IEnumerable<string>> GetLyrics()
@@ -147,7 +134,7 @@ namespace LyricDataProcessorConsole
 
             Console.WriteLine("Processing lyrics");
 
-            var excpList = new HashSet<char>(new[]{ '@', '"', '!', '(', ')', '.', '?', ',' });
+            var excpList = new HashSet<char>(new[]{ '@', '"', '!', '(', ')', '.', '?', ',', '“' });
 
             // Remove punctuation and remove blank lines
             var lyrics = songs

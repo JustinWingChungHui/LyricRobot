@@ -29,6 +29,7 @@ namespace LyricCreator
             }
 
             var output = new List<string>();
+            var markovModel = await BlobRepository<MarkovChain>.Get("MarkovChainOrder1");
 
             for (int i = 0; i < Math.Min(lines, 200); i++)
             {
@@ -36,10 +37,9 @@ namespace LyricCreator
                 var lyricLine = new List<string>();
 
                 log.LogInformation("Initialising Words Repo");
-                DocumentDBRepository<Word>.Initialize("MarkovChain1");
-
+               
                 var rand = new Random();
-                var predId = "Start of Line";
+                var predId = Word.StartOfLine;
 
                 var endOfLine = false;
 
@@ -47,11 +47,11 @@ namespace LyricCreator
 
                 while (!endOfLine)
                 {
-                    var predecessor = await DocumentDBRepository<Word>.GetItemAsync(predId);
+                    var predecessor = markovModel.Words[predId];
                     var roll = rand.Next(predecessor.SuccessorCountTotal);
 
-                    var successors = predecessor.successors.Values.OrderBy(s => s.CumulativeCount).ToList();
-                    string successor = successors.First(s => s.CumulativeCount >= roll).Word;
+                    var successors = predecessor.Successors.OrderBy(s => s.Value.CumulativeCount).ToList();
+                    string successor = successors.First(s => s.Value.CumulativeCount >= roll).Key;
 
                     log.LogInformation(successor);
 
