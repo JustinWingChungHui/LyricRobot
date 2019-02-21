@@ -29,14 +29,14 @@ namespace LyricCreator
             }
 
             var output = new List<string>();
+
+            log.LogInformation("Loading Markov Data");
             var markovModel = await BlobRepository<MarkovChain>.Get("MarkovChainOrder1");
 
             for (int i = 0; i < Math.Min(lines, 200); i++)
             {
 
                 var lyricLine = new List<string>();
-
-                log.LogInformation("Initialising Words Repo");
                
                 var rand = new Random();
                 var predId = Word.StartOfLine;
@@ -52,8 +52,6 @@ namespace LyricCreator
 
                     var successors = predecessor.Successors.OrderBy(s => s.Value.CumulativeCount).ToList();
                     string successor = successors.First(s => s.Value.CumulativeCount >= roll).Key;
-
-                    log.LogInformation(successor);
 
                     if (successor == Environment.NewLine)
                     {
