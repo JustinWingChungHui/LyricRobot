@@ -22,6 +22,12 @@ namespace LyricCreator
         {
             log.LogInformation("C# HTTP trigger LyricCreatorFunction processed a request.");
 
+            // Can call function to warm it up
+            if (!string.IsNullOrEmpty(req.Query["warmup"]))
+            {
+                return new OkObjectResult("OK");
+            }
+
             int lines;
             if (!int.TryParse(req.Query["lines"], out lines))
             {
