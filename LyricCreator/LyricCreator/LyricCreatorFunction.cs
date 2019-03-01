@@ -38,6 +38,8 @@ namespace LyricCreator
 
             log.LogInformation("Loading Markov Data");
             var markovModel = await BlobRepository<MarkovChain>.Get("MarkovChainOrder1");
+            var markovOrder2Model = await BlobRepository<MarkovChain>.Get("MarkovChainOrder2");
+            var lineLengthDistribution = await BlobRepository<LineLengthDistribution>.Get("LineLengthDistribution");
 
             for (int i = 0; i < Math.Min(lines, 200); i++)
             {
@@ -45,7 +47,9 @@ namespace LyricCreator
                 var lyricLine = new List<string>();
                
                 var rand = new Random();
-                var predId = Word.StartOfLine;
+                string pred1 = null;
+                var pred2 = Word.StartOfLine;
+                string successor = null;
 
                 var endOfLine = false;
 
@@ -53,11 +57,24 @@ namespace LyricCreator
 
                 while (!endOfLine)
                 {
-                    var predecessor = markovModel.Words[predId];
-                    var roll = rand.Next(predecessor.SuccessorCountTotal);
+                    var lineEndProbability = lineLengthDistribution.GetLineEndProbability(lyricLine.Count);
 
-                    var successors = predecessor.Successors.OrderBy(s => s.Value.CumulativeCount).ToList();
-                    string successor = successors.First(s => s.Value.CumulativeCount >= roll).Key;
+                    // Use first order markov for beginning
+                    if (pred1 == null)
+                    {
+                        successor = GetNextSuccessor(rand, markovModel, pred2, lineEndProbability);
+                    }
+                    else
+                    {
+                        // Use 2nd order markov
+                        successor = GetNextSuccessor(rand, markovOrder2Model, $"{pred1} {pred2}", lineEndProbability);
+
+                        // if 2nd order fails, fall back to first order
+                        if (string.IsNullOrEmpty(successor))
+                        {
+                            successor = GetNextSuccessor(rand, markovModel, pred2, lineEndProbability);
+                        }
+                    }
 
                     if (successor == Environment.NewLine)
                     {
@@ -66,14 +83,55 @@ namespace LyricCreator
                     else
                     {
                         lyricLine.Add(successor);
-                        predId = successor.ToLowerInvariant();
+                        pred1 = pred2;
+                        pred2 = successor.ToLowerInvariant();
                     }
+                    
                 }
 
                 output.Add(string.Join(" ", lyricLine));
             }
 
             return new JsonResult(output);                
+        }
+
+        private static string GetNextSuccessor(Random rand, MarkovChain markovChain, string pred, double lineEndProbability)
+        {
+            string successor = null;
+
+            if (markovChain.Words.ContainsKey(pred))
+            {
+                var predecessor = markovChain.Words[pred];
+
+                double k_factor = 0;
+
+                if (predecessor.EndOfLineCount == 0)
+                {
+                    k_factor = 0;
+                }
+                else
+                {
+                    k_factor = (lineEndProbability * predecessor.Successors.Count + lineEndProbability - 1) / (1 - lineEndProbability);
+                }
+
+                var endFactor = predecessor.EndOfLineCount + (int)k_factor;
+                
+                var normalisedCount = predecessor.SuccessorCountTotal + endFactor;
+               
+                var roll = rand.Next(normalisedCount);
+
+                var successors = predecessor.Successors.OrderBy(s => s.Value.CumulativeCount).ToList();
+
+                if (predecessor.EndOfLineCount > 0)
+                {
+                    // Add in end of line normalised count
+                    successors.Add(new KeyValuePair<string, SuccessorCount>(Environment.NewLine, new SuccessorCount { CumulativeCount = normalisedCount }));
+                }
+
+                successor = successors.First(s => s.Value.CumulativeCount >= roll).Key;
+            }
+
+            return successor;
         }
     }
 }

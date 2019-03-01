@@ -12,5 +12,8 @@ namespace LyricRobotCommon
 
         [JsonProperty(PropertyName = "c")]
         public int CumulativeCount { get; set; }
+
+        [JsonIgnore]
+        public int NormalizedCountWithEndOFLine { get; set; }
     }
 }

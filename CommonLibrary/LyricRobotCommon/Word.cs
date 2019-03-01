@@ -19,5 +19,8 @@ namespace LyricRobotCommon
 
         [JsonProperty(PropertyName = "c")]
         public int SuccessorCountTotal { get; set; }
+
+        [JsonProperty(PropertyName = "e")]
+        public int EndOfLineCount { get; set; }
     }
 }
