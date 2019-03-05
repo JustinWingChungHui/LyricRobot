@@ -34,11 +34,25 @@ namespace LyricCreator
                 lines = 10;
             }
 
+            string chain1Name;
+            string chain2Name;
+
+            if (!string.IsNullOrEmpty(req.Query["profanities"]) && req.Query["profanities"] == "true")
+            {
+                chain1Name = "MarkovChainOrder1";
+                chain2Name = "MarkovChainOrder2";                
+            }
+            else
+            {
+                chain1Name = "MarkovChainOrder1Clean";
+                chain2Name = "MarkovChainOrder2Clean";
+            }
+
             var output = new List<string>();
 
             log.LogInformation("Loading Markov Data");
-            var markovModel = await BlobRepository<MarkovChain>.Get("MarkovChainOrder1");
-            var markovOrder2Model = await BlobRepository<MarkovChain>.Get("MarkovChainOrder2");
+            var markovModel = await BlobRepository<MarkovChain>.Get(chain1Name);
+            var markovOrder2Model = await BlobRepository<MarkovChain>.Get(chain2Name);
             var lineLengthDistribution = await BlobRepository<LineLengthDistribution>.Get("LineLengthDistribution");
 
             for (int i = 0; i < Math.Min(lines, 200); i++)

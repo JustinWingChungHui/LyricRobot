@@ -13,18 +13,24 @@ namespace MarkovChainDataCreator
         {
             MainAsync(args).Wait();
         }
-
+        
         public static async Task MainAsync(string[] args)
         {
             Console.WriteLine("Starting...");
 
             var lyrics = await GetLyrics();
-
+           
             var markovChain = FirstOrderMarkov.CreateChain(lyrics);
 
             var markovChain2 = SecondOrderMarkov.CreateChain(lyrics);
 
-            var lineLengthDistribution = WordsPerline.GetLineLengthCount(lyrics);
+            var lineLengthDistribution = WordsPerline.GetLineLengthCount(lyrics);           
+
+            var cleanLyrics = GetCleanLyrics(lyrics);
+
+            var markovChainClean = FirstOrderMarkov.CreateChain(cleanLyrics);
+
+            var markovChain2Clean = SecondOrderMarkov.CreateChain(cleanLyrics);
 
             // Save to to blob storage           
             Console.WriteLine("Saving order 1 to blob");
@@ -35,10 +41,22 @@ namespace MarkovChainDataCreator
 
             Console.WriteLine("Saving line length distribution");
             await BlobRepository<LineLengthDistribution>.Create("LineLengthDistribution", lineLengthDistribution);
+
+            Console.WriteLine("Saving clean order 1 to blob");
+            await BlobRepository<MarkovChain>.Create("MarkovChainOrder1Clean", markovChainClean);
+
+            Console.WriteLine("Saving clean order 2 to blob");
+            await BlobRepository<MarkovChain>.Create("MarkovChainOrder2Clean", markovChain2Clean);
         }
 
-       
-       
+        private static IEnumerable<string> GetCleanLyrics(IEnumerable<string> lyrics)
+        {
+            var blacklist = GetBlacklistedWords();
+
+            var cleanLyrics = lyrics.Where(l => !l.Split(' ').Any(w => blacklist.Contains(w.ToLowerInvariant())));
+
+            return cleanLyrics;
+        }
 
         private static async Task<IEnumerable<string>> GetLyrics()
         {
@@ -63,6 +81,28 @@ namespace MarkovChainDataCreator
                 .Where(l => l.Count() > 0); ;
 
             return lyrics;
+        }
+
+        private static HashSet<string> GetBlacklistedWords()
+        {
+            var result = new HashSet<string>
+            {
+                "shit", "shitted", "shitting",
+                "fuck", "fucked", "fucking", "fucker", "fuckin'",
+                "motherfucker", "motherfuckers", "mutherfucka", "mutherfuckas",
+                "nigga", "niggas", "nigger", "niggers", "niggerz",
+                "cunt", "cunts",
+                "bitch", "bitches",                
+                "piss", "pissed",
+                "cock", "cocks", "cocksucker", "cocksuckers",
+                "tit", "tits",
+                "dick", "dicks",
+                "titty", "titties",
+                "pussy", "pussies",
+                "ass", 
+            };
+
+            return result;
         }
     }
 }
