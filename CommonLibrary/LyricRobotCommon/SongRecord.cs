@@ -27,5 +27,7 @@ namespace LyricRobotCommon
         public bool LyricsDownloaded { get; set; }
 
         public string Lyrics { get; set; }
+
+        public string Genre { get; set; }
     }
 }
