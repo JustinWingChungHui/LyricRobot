@@ -8,18 +8,18 @@ namespace MarkovChainDataCreator
 {
     public static class FirstOrderMarkov
     {
-        public static MarkovChain CreateChain(IEnumerable<string> lyrics)
+        public static MarkovChain CreateChain(string id, IEnumerable<string> lyrics)
         {
             var markovChain = new MarkovChain
             {
-                id = "MarkovChainOrder1",
+                id = id,
             };
 
             var chainStart = ProcessStartLyrics(lyrics);
             markovChain.Words.Add(Word.StartOfLine, chainStart);
 
             Console.WriteLine(string.Empty);
-            Console.WriteLine("Starting Markov Chain Order 1 Data");
+            Console.WriteLine($"Starting Markov Chain Order 1 Data for {id}");
 
 
             foreach (var lyric in lyrics)
@@ -57,7 +57,7 @@ namespace MarkovChainDataCreator
 
         private static Word ProcessStartLyrics(IEnumerable<string> lyrics)
         {
-            Console.WriteLine("Createing start word data");
+            Console.WriteLine("Creating start word data");
 
             // Count all the start words
             var dict = new Dictionary<string, SuccessorCount>();

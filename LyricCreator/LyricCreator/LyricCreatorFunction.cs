@@ -34,26 +34,33 @@ namespace LyricCreator
                 lines = 10;
             }
 
-            string chain1Name;
-            string chain2Name;
+            var suffix = string.Empty;
+            if (string.IsNullOrEmpty(req.Query["profanities"]) || req.Query["profanities"] == "false")
+            {
+                suffix = "Clean";
+            }
 
-            if (!string.IsNullOrEmpty(req.Query["profanities"]) && req.Query["profanities"] == "true")
+            var prefix = string.Empty;
+            if (!string.IsNullOrEmpty(req.Query["genre"]))
             {
-                chain1Name = "MarkovChainOrder1";
-                chain2Name = "MarkovChainOrder2";                
+                var genres = (Genre[])Enum.GetValues(typeof(Genre));
+
+                if (genres.Any(g => g.ToString() == req.Query["genre"]))
+                {
+                    prefix = req.Query["genre"];
+                }
             }
-            else
-            {
-                chain1Name = "MarkovChainOrder1Clean";
-                chain2Name = "MarkovChainOrder2Clean";
-            }
+
+            var chain1Name = $"{prefix}MarkovChainOrder1{suffix}";
+            var chain2Name = $"{prefix}MarkovChainOrder2{suffix}";
+            var lineLengthDistName = $"{prefix}LineLengthDistribution";
 
             var output = new List<string>();
 
             log.LogInformation("Loading Markov Data");
             var markovModel = await BlobRepository<MarkovChain>.Get(chain1Name);
             var markovOrder2Model = await BlobRepository<MarkovChain>.Get(chain2Name);
-            var lineLengthDistribution = await BlobRepository<LineLengthDistribution>.Get("LineLengthDistribution");
+            var lineLengthDistribution = await BlobRepository<LineLengthDistribution>.Get(lineLengthDistName);
 
             for (int i = 0; i < Math.Min(lines, 200); i++)
             {
@@ -93,7 +100,7 @@ namespace LyricCreator
                     if (successor == Environment.NewLine)
                     {
                         endOfLine = true;
-                    }
+                    }  
                     else
                     {
                         lyricLine.Add(successor);
@@ -119,11 +126,7 @@ namespace LyricCreator
 
                 double k_factor = 0;
 
-                if (predecessor.EndOfLineCount == 0)
-                {
-                    k_factor = 0;
-                }
-                else
+                if (predecessor.EndOfLineCount > 0 && lineEndProbability > 0.9)                
                 {
                     k_factor = (lineEndProbability * predecessor.Successors.Count + lineEndProbability - 1) / (1 - lineEndProbability);
                 }

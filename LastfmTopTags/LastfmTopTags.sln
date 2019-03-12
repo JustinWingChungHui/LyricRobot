@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2041
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LastfmTopTags", "LastfmTopTags\LastfmTopTags.csproj", "{0D7447A4-2B1A-45EA-A651-768A7716B7F1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LyricRobotCommon", "..\CommonLibrary\LyricRobotCommon\LyricRobotCommon.csproj", "{4AA0CB84-43D8-451C-9E34-C539947AB6C7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D7447A4-2B1A-45EA-A651-768A7716B7F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D7447A4-2B1A-45EA-A651-768A7716B7F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D7447A4-2B1A-45EA-A651-768A7716B7F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D7447A4-2B1A-45EA-A651-768A7716B7F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AA0CB84-43D8-451C-9E34-C539947AB6C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AA0CB84-43D8-451C-9E34-C539947AB6C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AA0CB84-43D8-451C-9E34-C539947AB6C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AA0CB84-43D8-451C-9E34-C539947AB6C7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {129A3ABA-B99D-403C-BC89-CDEEA2D703EC}
+	EndGlobalSection
+EndGlobal

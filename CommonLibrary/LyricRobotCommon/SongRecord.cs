@@ -1,6 +1,7 @@
 ﻿using MusicDemons.Core.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace LyricRobotCommon
@@ -20,6 +21,8 @@ namespace LyricRobotCommon
 
         public string id { get; set; }
 
+        public string Artist { get; set; }
+
         public string Title { get; set; }
 
         public DateTime? Released { get; set; }
@@ -28,6 +31,6 @@ namespace LyricRobotCommon
 
         public string Lyrics { get; set; }
 
-        public string Genre { get; set; }
+        public List<string> Genre { get; set; }
     }
 }

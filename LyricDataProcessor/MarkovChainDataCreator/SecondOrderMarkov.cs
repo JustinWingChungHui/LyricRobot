@@ -8,15 +8,15 @@ namespace MarkovChainDataCreator
 {
     public static class SecondOrderMarkov
     {
-        public static MarkovChain CreateChain(IEnumerable<string> lyrics)
+        public static MarkovChain CreateChain(string id, IEnumerable<string> lyrics)
         {
             var markovChain = new MarkovChain
             {
-                id = "MarkovChainOrder2",
+                id = id,
             };
 
             Console.WriteLine(string.Empty);
-            Console.WriteLine("Starting Markov Chain Order 2 Data");
+            Console.WriteLine($"Starting Markov Chain Order 2 Data for {id}");
 
 
 

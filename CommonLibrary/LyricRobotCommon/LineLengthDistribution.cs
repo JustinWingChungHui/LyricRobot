@@ -19,7 +19,12 @@ namespace LyricRobotCommon
         {
             if (CumulativeLineLengthCount.ContainsKey(wordCount))
             {
-                return CumulativeLineLengthCount[wordCount];
+                return Math.Min(CumulativeLineLengthCount[wordCount], 0.99);
+            }
+
+            if (wordCount > CumulativeLineLengthCount.Count)
+            {
+                return 0.99;
             }
 
             return 0;
