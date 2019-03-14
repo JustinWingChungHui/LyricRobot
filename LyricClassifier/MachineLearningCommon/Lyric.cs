@@ -7,14 +7,20 @@ namespace MachineLearningCommon
 {
     public class Lyric
     {
+        [LoadColumn(0)]
         public string Text { get; set; }
 
-        public string Genre { get; set; }
+        [LoadColumn(1), ColumnName("Label")]
+        public bool Genre { get; set; }
     }
 
     public class GenrePrediction
     {
         [ColumnName("PredictedLabel")]
-        public string Genre { get; set; }
+        public bool Prediction { get; set; }
+
+        public float Probability { get; set; }
+
+        public float Score { get; set; }
     }
 }

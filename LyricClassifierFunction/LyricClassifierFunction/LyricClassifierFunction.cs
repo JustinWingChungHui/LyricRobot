@@ -10,6 +10,11 @@ using Newtonsoft.Json;
 using Microsoft.ML;
 using LyricRobotCommon;
 using MachineLearningCommon;
+using System.Collections.Generic;
+using System.Linq;
+using System.Diagnostics;
+using System.Collections.Async;
+using System.Collections.Concurrent;
 
 namespace LyricClassifierFunction
 {
@@ -22,33 +27,113 @@ namespace LyricClassifierFunction
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string lyrics = req.Query["lyrics"];
+            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            dynamic data = JsonConvert.DeserializeObject(requestBody);
+            string lyrics = data?.lyrics;
+            string warmup = data?.warmup;
 
-            if (!string.IsNullOrWhiteSpace(lyrics))
+            // Can call function to warm it up
+            if (!string.IsNullOrEmpty(warmup))
             {
-                var mlContext = new MLContext(seed: 0);
-                ITransformer model;
+                return new OkObjectResult("OK");
+            }
 
-                using (var stream = await BlobRepository<object>.GetAsStream("GenrePrediction"))
+            var result = new GenreResults();
+
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(lyrics))
                 {
-                    model = mlContext.Model.Load(stream);
+                    // These have enough data to form a prediction
+                    var genres = new List<Genre>
+                    {
+                        Genre.Rock,
+                        Genre.Electronic,
+                        Genre.Alternative,
+                        Genre.Indie,
+                        Genre.Pop,
+                        Genre.Metal,
+                        Genre.Folk,
+                        Genre.Punk,
+                        Genre.HipHop,
+                        Genre.SingerSongWriter,
+                        Genre.Dance,
+                        Genre.Soul,
+                        Genre.Acoustic,
+                        Genre.Funk
+                    };
+
+                    var bag = new ConcurrentBag<GenreResult>();
+
+                    await genres.ParallelForEachAsync(async genre =>
+                    {
+                        var genreResult = await GetGenreResult(genre, lyrics, log);
+                        bag.Add(genreResult);
+                    });
+
+                    result.Results = bag.OrderByDescending(g => g.Result.Probability).ToList();
+
+                    result.Message = "Success";
                 }
-
-                var predEngine = model.CreatePredictionEngine<Lyric, GenrePrediction>(mlContext);
-
-                var lyricObj = new Lyric
+                else
                 {
-                    Text = lyrics
-                };
-
-                var result = predEngine.Predict(lyricObj);
-
-                return new JsonResult(result);
+                    result.Message = "No lyrics submitted";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return new BadRequestObjectResult("No lyrics specified");
+                log.LogInformation($"Error: {ex.Message}");
+                result.Message = ex.Message;
             }
+
+            return new JsonResult(result);
+        }
+
+        private static async Task<GenreResult> GetGenreResult(Genre genre, string lyrics, ILogger log)
+        {
+            log.LogInformation($"Loading {genre.ToString()} prediction model");
+
+            var mlContext = new MLContext(seed: 0);
+            ITransformer model;
+
+            using (var stream = await BlobRepository<object>.GetAsStream($"{genre.ToString()}GenrePrediction"))
+            {
+                var task = new Task<ITransformer>(() => mlContext.Model.Load(stream));
+                task.Start();
+                model = await task;
+                //model = mlContext.Model.Load(stream);
+            }
+
+            log.LogInformation($"Finished loading {genre.ToString()} prediction model.");
+
+            var predEngineTask = new Task<PredictionEngine<Lyric, GenrePrediction>>(() => model.CreatePredictionEngine<Lyric, GenrePrediction>(mlContext));
+            predEngineTask.Start();
+            var predEngine = await predEngineTask;
+            //var predEngine = model.CreatePredictionEngine<Lyric, GenrePrediction>(mlContext);
+
+            log.LogInformation($"Creating {genre.ToString()} prediction model");
+
+            var lyricObj = new Lyric
+            {
+                Text = lyrics
+            };
+
+            log.LogInformation($"Predicting {genre.ToString()}...");
+
+            var genreResultTask = new Task<GenrePrediction>(() => predEngine.Predict(lyricObj));
+            genreResultTask.Start();
+            var genreResult = await genreResultTask;
+            //var genreResult = predEngine.Predict(lyricObj);
+
+            var result =new GenreResult
+            {
+                Genre = genre.ToString(),
+                Result = genreResult
+            };
+        
+            log.LogInformation($"Finished prediction {result.ToString()}");
+
+            return result;
         }
     }
 }

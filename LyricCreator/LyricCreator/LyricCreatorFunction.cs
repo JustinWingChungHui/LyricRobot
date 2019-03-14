@@ -97,7 +97,7 @@ namespace LyricCreator
                         }
                     }
 
-                    if (successor == Environment.NewLine)
+                    if (successor == Environment.NewLine || lyricLine.Count > 50)
                     {
                         endOfLine = true;
                     }  
