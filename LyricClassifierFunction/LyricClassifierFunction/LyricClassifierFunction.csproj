@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\CommonLibrary\LyricRobotCommon\LyricRobotCommon.csproj" />
     <ProjectReference Include="..\..\LyricClassifier\MachineLearningCommon\MachineLearningCommon.csproj" />
+    <ProjectReference Include="..\SharedClassifierFunction\SharedClassifierFunction.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
